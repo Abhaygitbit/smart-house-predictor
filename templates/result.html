@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> —Your Result</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body class="result-page">
+
+  <!-- Animated background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <!-- Navigation 
+  <nav class="navbar">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">PropValue <em>AI</em></span>
+    </div>
+    <a href="/" class="nav-back">← New Prediction</a>
+  </nav>
+
+  <main class="container result-container"> -->
+
+    <!-- Top label -->
+    <div class="result-tag fade-in">PREDICTION COMPLETE ✦</div>
+
+    <!-- Hero price -->
+    <div class="price-hero fade-in" style="animation-delay:.1s">
+      <div class="price-label">Estimated Property Value</div>
+      <div class="price-value">{{ predicted_price_fmt }}</div>
+      <div class="price-exact">( {{ predicted_price }} )</div>
+    </div>
+
+    <!-- 3 key cards -->
+    <div class="key-cards fade-in" style="animation-delay:.2s">
+
+      <div class="key-card key-card--emi">
+        <div class="kc-icon">📅</div>
+        <div class="kc-body">
+          <div class="kc-label">Monthly EMI</div>
+          <div class="kc-value">{{ monthly_emi }}</div>
+          <div class="kc-sub">{{ loan_tenure }} yrs @ {{ interest_rate }}% p.a.</div>
+        </div>
+      </div>
+
+      <div class="key-card key-card--total">
+        <div class="kc-icon">💳</div>
+        <div class="kc-body">
+          <div class="kc-label">Total Payment</div>
+          <div class="kc-value">{{ total_payment }}</div>
+          <div class="kc-sub">Principal + Interest</div>
+        </div>
+      </div>
+
+      <div class="key-card key-card--interest">
+        <div class="kc-icon">📈</div>
+        <div class="kc-body">
+          <div class="kc-label">Total Interest</div>
+          <div class="kc-value">{{ total_interest }}</div>
+          <div class="kc-sub">Over {{ loan_tenure }} years</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Two column: chart + breakdown -->
+    <div class="analysis-row fade-in" style="animation-delay:.3s">
+
+      <!-- Donut chart -->
+      <div class="chart-box">
+        <div class="box-title">Loan Composition</div>
+        <div class="donut-wrap">
+          <canvas id="donutChart" width="200" height="200"></canvas>
+          <div class="donut-center">
+            <div class="dc-label">Interest</div>
+            <div class="dc-val">{{ interest_pct }}%</div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-dot dot-principal"></span>Principal ({{ principal_pct }}%)</div>
+          <div class="legend-item"><span class="legend-dot dot-interest"></span>Interest ({{ interest_pct }}%)</div>
+        </div>
+      </div>
+
+      <!-- Loan breakdown table -->
+      <div class="breakdown-box">
+        <div class="box-title">Payment Breakdown</div>
+        <div class="breakdown-rows">
+          <div class="br-row">
+            <span class="br-label">🏠 Property Price</span>
+            <span class="br-val">{{ predicted_price }}</span>
+          </div>
+          <div class="br-row">
+            <span class="br-label">💰 Down Payment (20%)</span>
+            <span class="br-val accent-green">{{ down_payment }}</span>
+          </div>
+          <div class="br-row">
+            <span class="br-label">🏦 Loan Amount (80%)</span>
+            <span class="br-val">{{ loan_amount }}</span>
+          </div>
+          <div class="br-row">
+            <span class="br-label">📅 Monthly EMI</span>
+            <span class="br-val accent-teal">{{ monthly_emi }}</span>
+          </div>
+          <div class="br-row">
+            <span class="br-label">📊 Interest Paid</span>
+            <span class="br-val accent-orange">{{ total_interest }}</span>
+          </div>
+          <div class="br-row br-row--total">
+            <span class="br-label">✦ Total Outflow</span>
+            <span class="br-val">{{ total_payment }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Property summary -->
+    <div class="prop-summary fade-in" style="animation-delay:.4s">
+      <div class="box-title">Property Details Used</div>
+      <div class="prop-grid">
+        <div class="prop-item">
+          <div class="pi-icon">🛏</div>
+          <div class="pi-val">{{ bhk }} BHK</div>
+          <div class="pi-label">Configuration</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">📐</div>
+          <div class="pi-val">{{ area_sqft }} ft²</div>
+          <div class="pi-label">Carpet Area</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">📍</div>
+          <div class="pi-val">{{ location_type }}</div>
+          <div class="pi-label">Location</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">🛋</div>
+          <div class="pi-val">{{ furnishing_status }}</div>
+          <div class="pi-label">Furnishing</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">🛣</div>
+          <div class="pi-val">{{ mainroad_access }}</div>
+          <div class="pi-label">Main Road</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">🏢</div>
+          <div class="pi-val">Floor {{ floor_number }}</div>
+          <div class="pi-label">Floor Level</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">🚗</div>
+          <div class="pi-val">{{ parking_spaces }}</div>
+          <div class="pi-label">Parking</div>
+        </div>
+        <div class="prop-item">
+          <div class="pi-icon">🏚</div>
+          <div class="pi-val">{{ house_age }} yrs</div>
+          <div class="pi-label">Property Age</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="result-cta fade-in" style="animation-delay:.5s">
+      <a href="/" class="btn-new">
+        <span>◈</span> Predict Another Property
+      </a>
+      <button onclick="window.print()" class="btn-print">🖨 Print Report</button>
+    </div>
+
+  </main>
+<!---
+  <footer class="site-footer">
+    <span>PropValue AI &nbsp;·&nbsp; Built with Python, Flask & Scikit-learn</span>
+  </footer>
+-->
+  <script>
+    // Simple canvas donut chart
+    const canvas = document.getElementById("donutChart");
+    const ctx = canvas.getContext("2d");
+    const principal = {{ principal_pct }};
+    const interest  = {{ interest_pct }};
+
+    const cx = 100, cy = 100, r = 75, lineW = 22;
+    const start = -Math.PI / 2;
+    const total = principal + interest;
+
+    function arc(from, to, color) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, from, to);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineW;
+      ctx.lineCap = "butt";
+      ctx.stroke();
+    }
+
+    const pAngle = (principal / total) * 2 * Math.PI;
+    const iAngle = (interest  / total) * 2 * Math.PI;
+
+    arc(start, start + pAngle, "#00c9a7");
+    arc(start + pAngle, start + pAngle + iAngle, "#f5a623");
+
+    // Animate entry
+    document.querySelectorAll(".fade-in").forEach((el, i) => {
+      el.style.opacity = 0;
+      el.style.transform = "translateY(24px)";
+      setTimeout(() => {
+        el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+        el.style.opacity = 1;
+        el.style.transform = "translateY(0)";
+      }, 100 + i * 120);
+    });
+  </script>
+
+</body>
+</html>
+

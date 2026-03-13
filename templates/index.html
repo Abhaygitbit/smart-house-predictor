@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>House Price Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+  <!-- Animated background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <!-- Navigation 
+  <nav class="navbar">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text"> <em></em></span>
+    </div>
+    {% if metrics %}
+    <div class="nav-badge">
+      <span class="badge-dot"></span>
+      Model R² {{ "%.1f"|format(metrics.r2 * 100) }}% Accurate
+    </div>
+    {% endif %}
+  </nav> -->
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-tag">MACHINE LEARNING POWERED</div>
+    <h1 class="hero-title">Predict Your<br/><span class="gradient-text">Dream Home's</span><br/><em>True Value</em></h1>
+    <p class="hero-desc">Enter property details below and get an instant AI-powered price estimate along with your personalised EMI breakdown.</p>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Fill the form</span>
+    </div>
+  </section>
+
+  <!-- Error banner -->
+  {% if error %}
+  <div class="container">
+    <div class="error-card">
+      <span class="err-icon">⚠</span>
+      <span>{{ error }}</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Form -->
+  <main class="container">
+    <form action="/predict" method="POST" class="main-form" id="predForm">
+
+      <!-- Section 1 -->
+      <div class="form-section" data-delay="0">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div>
+            <div class="section-label">PROPERTY BASICS</div>
+            <div class="section-title">Tell us about the house</div>
+          </div>
+        </div>
+
+        <div class="fields-grid">
+
+          <div class="field-wrap">
+            <label class="field-label">BHK Configuration</label>
+            <div class="bhk-pills">
+              <input type="hidden" name="bhk" id="bhk-val" value="" required/>
+              <button type="button" class="pill" data-val="1">1 BHK</button>
+              <button type="button" class="pill" data-val="2">2 BHK</button>
+              <button type="button" class="pill" data-val="3">3 BHK</button>
+              <button type="button" class="pill" data-val="4">4 BHK</button>
+              <button type="button" class="pill" data-val="5">5 BHK</button>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="area_sqft">Carpet Area (sq ft)</label>
+            <div class="input-wrap">
+              <input type="number" id="area_sqft" name="area_sqft" placeholder="e.g. 1200" min="200" max="10000" required/>
+              <span class="input-unit">ft²</span>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="furnishing_status">Furnishing Status</label>
+            <div class="select-wrap">
+              <select id="furnishing_status" name="furnishing_status" required>
+                <option value="" disabled selected>Choose status</option>
+                <option value="Furnished">✅ Furnished</option>
+                <option value="Semi-Furnished">🔶 Semi-Furnished</option>
+                <option value="Unfurnished">📦 Unfurnished</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="location_type">Location Type</label>
+            <div class="select-wrap">
+              <select id="location_type" name="location_type" required>
+                <option value="" disabled selected>Choose location</option>
+                <option value="Urban">🌆 Urban</option>
+                <option value="Suburban">🏘️ Suburban</option>
+                <option value="Rural">🌾 Rural</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="form-section" data-delay="100">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div>
+            <div class="section-label">STRUCTURAL DETAILS</div>
+            <div class="section-title">More property info</div>
+          </div>
+        </div>
+
+        <div class="fields-grid">
+
+          <div class="field-wrap">
+            <label class="field-label">Main Road Access</label>
+            <div class="toggle-group">
+              <input type="hidden" name="mainroad_access" id="road-val" value="" required/>
+              <button type="button" class="toggle-btn active-yes" data-val="Yes" id="roadYes">✓ Yes</button>
+              <button type="button" class="toggle-btn" data-val="No" id="roadNo">✗ No</button>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="floor_number">Floor Number</label>
+            <div class="input-wrap">
+              <input type="number" id="floor_number" name="floor_number" placeholder="0 = Ground" min="0" max="50" required/>
+              <span class="input-unit">fl</span>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="parking_spaces">Parking Spaces</label>
+            <div class="input-wrap">
+              <input type="number" id="parking_spaces" name="parking_spaces" placeholder="e.g. 1" min="0" max="10" required/>
+              <span class="input-unit">🚗</span>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="house_age">Property Age</label>
+            <div class="input-wrap">
+              <input type="number" id="house_age" name="house_age" placeholder="e.g. 5" min="0" max="100" required/>
+              <span class="input-unit">yrs</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="form-section" data-delay="200">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div>
+            <div class="section-label">LOAN & EMI</div>
+            <div class="section-title">Calculate your monthly payment</div>
+          </div>
+        </div>
+
+        <div class="fields-grid fields-grid--2">
+
+          <div class="field-wrap">
+            <label class="field-label" for="interest_rate">Annual Interest Rate</label>
+            <div class="input-wrap">
+              <input type="number" id="interest_rate" name="interest_rate" placeholder="e.g. 8.5" step="0.1" min="1" max="30" required/>
+              <span class="input-unit">%</span>
+            </div>
+            <div class="field-hint">Current SBI home loan rate: ~8.5%</div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label" for="loan_tenure">Loan Tenure</label>
+            <div class="input-wrap">
+              <input type="number" id="loan_tenure" name="loan_tenure" placeholder="e.g. 20" min="1" max="30" required/>
+              <span class="input-unit">yrs</span>
+            </div>
+            <div class="field-hint">Max: 30 years</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-wrap">
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <div class="btn-inner">
+            <span class="btn-icon">◈</span>
+            <span class="btn-text">Predict Price & EMI</span>
+            <span class="btn-arrow">→</span>
+          </div>
+          <div class="btn-loader" id="btnLoader" style="display:none">
+            <span class="spin">◌</span> Analysing...
+          </div>
+        </button>
+        <p class="submit-note">Powered by Linear Regression · Trained on 1000 properties</p>
+      </div>
+
+    </form>
+  </main>
+
+  // footer
+
+  <script>
+    // BHK pills 
+    document.querySelectorAll(".pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".pill").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("bhk-val").value = btn.dataset.val;
+      });
+    });
+
+    // Main road toggle
+    const roadBtns = document.querySelectorAll(".toggle-btn");
+    roadBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        roadBtns.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        document.getElementById("road-val").value = btn.dataset.val;
+      });
+    });
+
+    // Submit loader
+    document.getElementById("predForm").addEventListener("submit", function(e) {
+      const bhk = document.getElementById("bhk-val").value;
+      const road = document.getElementById("road-val").value;
+      if (!bhk) { e.preventDefault(); alert("Please select BHK configuration."); return; }
+      if (!road) { e.preventDefault(); alert("Please select Main Road Access."); return; }
+      document.getElementById("submitBtn").querySelector(".btn-inner").style.display = "none";
+      document.getElementById("btnLoader").style.display = "flex";
+    });
+
+    // Animate sections on load
+    const sections = document.querySelectorAll(".form-section");
+    sections.forEach((s, i) => {
+      s.style.animationDelay = (i * 0.15) + "s";
+      s.classList.add("fade-in");
+    });
+  </script>
+</body>
+</html>
